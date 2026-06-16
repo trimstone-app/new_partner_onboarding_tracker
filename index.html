@@ -1,0 +1,229 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trimstone — Onboarding Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+  :root{--charcoal:#343434;--body:#414441;--orange:#C05124;--navy:#1C3B63;--amber:#805200;--stone:#D8D7D0;--off:#F7F7F5;--line:#E7E6E1}
+  *{box-sizing:border-box}
+  body{font-family:'Poppins',system-ui,sans-serif;color:var(--body);margin:0;background:#fff;line-height:1.45}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 18px 80px}
+  header.banner{background:var(--charcoal);color:#fff;padding:20px 26px;border-radius:0 0 6px 6px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+  .logo{font-weight:700;font-size:22px;letter-spacing:.5px}
+  .banner h1{font-size:19px;font-weight:700;margin:0}
+  .banner .sub{color:#F7A503;font-size:12.5px;margin-top:2px}
+  .people{display:flex;gap:10px;overflow-x:auto;padding:16px 2px 6px}
+  .chip{min-width:190px;border:1px solid var(--line);border-radius:9px;padding:11px 13px;cursor:pointer;background:#fff;flex:0 0 auto;position:relative;transition:.15s}
+  .chip:hover{border-color:var(--stone)}
+  .chip.active{border-color:var(--orange);box-shadow:0 0 0 2px rgba(192,81,36,.15)}
+  .chip .nm{font-weight:600;color:var(--charcoal);font-size:14px}
+  .chip .ro{font-size:11.5px;color:#7a7d77;margin-bottom:6px}
+  .chip .when{font-size:11px;color:var(--amber);font-weight:600}
+  .chip .acc{font-size:11px;color:var(--navy);font-weight:600;margin-top:3px}
+  .chip .mini{height:6px;background:var(--stone);border-radius:4px;margin-top:8px;overflow:hidden}
+  .chip .mini>span{display:block;height:100%;background:var(--orange)}
+  .chip .pc{font-size:11px;color:#7a7d77;margin-top:4px}
+  .chip .del{position:absolute;top:6px;right:8px;color:#bbb;font-size:14px;line-height:1;border:none;background:none;cursor:pointer}
+  .chip .del:hover{color:var(--orange)}
+  .chip.add{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--navy);font-weight:600;font-size:13px;border-style:dashed;min-width:120px}
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:12px 0 4px;padding:13px 16px;background:var(--off);border:1px solid var(--line);border-radius:8px}
+  label{font-size:11.5px;font-weight:600;color:var(--charcoal);text-transform:uppercase;letter-spacing:.4px;margin-right:6px}
+  select{font-family:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--stone);border-radius:6px;background:#fff;color:var(--body)}
+  .accbar{display:flex;align-items:center;gap:10px;margin:16px 0 0;padding:11px 14px;background:#eef2f7;border:1px solid #d8e0ea;border-radius:8px;font-size:13.5px}
+  .accbar b{color:var(--navy)}
+  .progress-top{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--charcoal);margin:14px 0 6px}
+  .bar{height:10px;background:var(--stone);border-radius:6px;overflow:hidden}
+  .bar>span{display:block;height:100%;background:var(--orange);width:0;transition:width .3s}
+  .section-band{background:var(--navy);color:#fff;font-weight:700;font-size:14px;letter-spacing:.5px;padding:10px 16px;border-radius:6px;margin:22px 0 0}
+  .phase-band{background:var(--orange);color:#fff;font-weight:600;font-size:13px;padding:9px 16px;margin-top:13px;border-radius:5px;display:flex;justify-content:space-between}
+  .phase-band.addon{background:var(--charcoal)}
+  .phase-band .count{font-weight:500;font-size:12px;opacity:.9}
+  .task{display:grid;grid-template-columns:30px 28px 1fr;gap:10px;align-items:start;padding:11px 14px;border:1px solid var(--line);border-top:none;background:#fff}
+  .task:nth-child(even){background:var(--off)}
+  .task.done{background:#F2F7F2}
+  .task input{width:19px;height:19px;margin-top:1px;cursor:pointer;accent-color:var(--orange)}
+  .num{font-weight:700;color:var(--orange);font-size:13px;text-align:center}
+  .title{font-size:14px;color:var(--charcoal);font-weight:500}
+  .task.done .title{text-decoration:line-through;color:#8a8d88}
+  .meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;align-items:center}
+  .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;color:#fff;white-space:nowrap}
+  .sys{font-size:11px;color:#6b6e69;background:#fff;border:1px solid var(--stone);padding:2px 8px;border-radius:20px}
+  .notes{font-size:11.5px;color:#7a7d77;margin-top:4px}
+  .stamp{font-size:11.5px;color:var(--amber);font-weight:600;margin-top:4px}
+  .person-group{margin-top:22px}
+  .person-group h3{font-size:14px;color:var(--charcoal);margin:0;padding:9px 14px;background:var(--off);border:1px solid var(--line);border-radius:6px 6px 0 0;display:flex;justify-content:space-between}
+  .person-group h3 .due{font-weight:500;font-size:12px;color:var(--amber)}
+  .demo-note{font-size:12px;color:#8a8d88;margin:24px 2px 0;padding-top:14px;border-top:1px solid var(--line)}
+  .demo-note b{color:var(--charcoal)}
+  .empty{padding:18px;color:#8a8d88;font-size:13px;text-align:center;border:1px dashed var(--line);border-radius:8px;margin-top:14px}
+</style>
+
+<header class="banner">
+  <div class="logo">Trimstone</div>
+  <div style="flex:1;min-width:200px">
+    <h1>New Partner Onboarding — Tracker</h1>
+    <div class="sub">Run · People Operations · interactive</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="people" id="people"></div>
+
+  <div class="controls">
+    <div><label>I am</label><select id="me"></select></div>
+    <div><label>View</label>
+      <select id="view">
+        <option value="person">This person’s checklist</option>
+        <option value="mine">My actions (everyone)</option>
+      </select>
+    </div>
+    <div id="filterOpenWrap"><label>Show</label>
+      <select id="filterOpen"><option value="all">All</option><option value="open">Open only</option></select>
+    </div>
+  </div>
+
+  <div class="progress-top"><span id="progLabel"></span><span id="progPct"></span></div>
+  <div class="bar"><span id="progBar"></span></div>
+
+  <div id="main"></div>
+
+  <p class="demo-note"><b>Note.</b> Each person is a separate run of the same checklist, with its own tick state and its own accountable owner.
+  Same tasks and same responsible people as the Word version. For the live version the save/load functions swap to Supabase.</p>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// ====== PASTE YOUR TWO SUPABASE VALUES HERE ======
+const SUPABASE_URL = 'https://jmnzfeefgsxarxphpfuh.supabase.co';      // Project URL (base — no /rest/v1/)
+const SUPABASE_KEY = 'sb_publishable_7rmJOSJVA_tOIMk_kyPkyw_70dq2Mqi'; // Publishable key (safe to be public)
+// =================================================
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const ROW_ID = 'partner-onboarding';
+
+const OWNERS=["Iryna","Miguel","Will","James","Hazal","Leila","Jane","Francis","Korbinian"];
+const ACCOUNTABLE=["Miguel","Will","James","Iryna","Hazal","Francis","Korbinian"];
+const OC={Iryna:"#C05124",Miguel:"#805200",Will:"#1C3B63",James:"#3B6E47",Hazal:"#7A4DA3",Leila:"#0F7A8A",Jane:"#B5651D",Francis:"#4A5899",Korbinian:"#9C4A6B"};
+function color(o){o=o.trim();return OC[o]||(o.startsWith("James")?OC.James:"#8a8d88");}
+
+const TASKS=[
+ {sec:"BEFORE STARTING WORK",ph:"Phase 1 — Offer & pre-employment compliance",n:1,task:"Offer letter",owner:"Miguel/Will/James",sys:"SharePoint / Email",notes:"Included the information that was agreed upon previously"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 1 — Offer & pre-employment compliance",n:2,task:"PSC due-diligence check",owner:"Need to clarify",sys:"—",notes:"Persons with Significant Control / company check"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 1 — Offer & pre-employment compliance",n:3,task:"DBS check (formerly “CRB”)",owner:"Iryna",sys:"—",notes:"Basic check via gov.uk; certificate number, surname, DOB & consent code"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 1 — Offer & pre-employment compliance",n:4,task:"Issue platform contracts",owner:"Miguel/James",sys:"SignNow",notes:"Drafted & sent; signed copy to Confidential folder"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 1 — Offer & pre-employment compliance",n:5,task:"Partners sign contract and send to partner",owner:"Miguel / Will / James",sys:"SignNow",notes:"Signed copy to Confidential folder"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 2 — IT, systems & access",n:6,task:"Create Microsoft corporate account",owner:"Miguel",sys:"M365",notes:"—"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 2 — IT, systems & access",n:7,task:"Order laptop",owner:"Miguel",sys:"—",notes:"—"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 2 — IT, systems & access",n:8,task:"Issue WeWork pass / membership",owner:"Miguel",sys:"WeWork",notes:"Office registration; office-attendance expectation per contract"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 3 — Welcome & induction",n:9,task:"Send welcome message to new joiner (CC team)",owner:"Miguel",sys:"M365 / Email",notes:"—"},
+ {sec:"BEFORE STARTING WORK",ph:"Phase 3 — Welcome & induction",n:10,task:"Provide Trimstone Partners Handbook + obtain acknowledgement",owner:"Iryna",sys:"Email / SharePoint",notes:"Give time to read; Policies and Handbooks (Internal Files). Partners Handbook to be created"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:11,task:"Welcome event",owner:"Miguel",sys:"—",notes:"Introduce new Partner to the team"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:12,task:"Tour of premises, including location of office",owner:"Miguel",sys:"WeWork",notes:"During first week"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:13,task:"Send Trimstone Expense Policy",owner:"Iryna",sys:"Email",notes:"Flag £300 pre-approval, £1k approval, 30-day submission"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:14,task:"Add to regular team meetings and Teams channels",owner:"Miguel/Will",sys:"Email/Teams",notes:""},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:15,task:"Induction & training",owner:"Hazal",sys:"Torr / Xero",notes:"Torr, Xero, folder structure, AI tools, PPT template, team & projects; timesheets by 12:00 Fri"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:16,task:"Assign sponsor",owner:"Will",sys:"—",notes:"Per offer letter"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:17,task:"Provide growth scheme details and issue growth shares",owner:"Miguel",sys:"Conversation / SharePoint",notes:"Provide details of partner share scheme"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:18,task:"Provide personal development / objectives",owner:"Will",sys:"Conversation / SharePoint",notes:"Personal development goals"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 4 — People, reporting & induction",n:19,task:"Update website / LinkedIn",owner:"Leila",sys:"—",notes:""},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 5 — Pay & benefits",n:20,task:"Set up on payroll (collect bank details and NIN)",owner:"Miguel",sys:"Xero",notes:"Other details for future payments; if needed"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 5 — Pay & benefits",n:21,task:"Share pricing sheet and explain process",owner:"Miguel",sys:"Xero",notes:""},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 5 — Pay & benefits",n:22,task:"Share partner reporting",owner:"Miguel",sys:"Xero",notes:""},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 5 — Pay & benefits",n:23,task:"Train in Xero",owner:"Miguel",sys:"Xero",notes:""},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 6 — IT, systems & access",n:24,task:"Issue & configure laptop",owner:"Miguel",sys:"—",notes:"Company-issued. Set up with Neil Chambers (Your Tech Dept)"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 6 — IT, systems & access",n:25,task:"Set up software / tool memberships",owner:"Hazal / James",sys:"Claude / Fireflies / etc.",notes:"As relevant: Claude, Fireflies, etc."},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 6 — IT, systems & access",n:26,task:"Grant Torr Portal access",owner:"Miguel",sys:"Torr Portal",notes:"Standard user access"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 6 — IT, systems & access",n:27,task:"Grant Xero access",owner:"Miguel / Iryna",sys:"Xero",notes:"If needed"},
+ {sec:"AFTER STARTING WORK — FIRST WEEK",ph:"Phase 6 — IT, systems & access",n:28,task:"Grant Zoho CRM access",owner:"Miguel / Iryna",sys:"Zoho CRM",notes:"If needed"},
+];
+
+const KEY="ts-onboarding-final-v3";
+let data={runs:[],progress:{}}, activeRun=null;
+const SEED={runs:[
+  {id:"r1",name:"New Partner",role:"Partner",start:"2026-07-06",accountable:"Will"},
+],progress:{r1:{}}};
+
+async function load(){
+  try{
+    const { data: row, error } = await supabase.from('tracker_state').select('data').eq('id', ROW_ID).maybeSingle();
+    if(error) throw error;
+    return row?.data ?? JSON.parse(JSON.stringify(SEED));
+  }catch(e){ console.warn('Supabase load failed - using local seed. Have you pasted your URL + publishable key?', e); return JSON.parse(JSON.stringify(SEED)); }
+}
+async function save(){
+  try{
+    const { error } = await supabase.from('tracker_state').upsert({ id: ROW_ID, data, updated_at: new Date().toISOString() });
+    if(error) throw error;
+  }catch(e){ console.error('Supabase save failed', e); }
+}
+
+const $=id=>document.getElementById(id);
+const meSel=$("me"); meSel.innerHTML='<option value="">— select —</option>'+OWNERS.map(o=>`<option>${o}</option>`).join("");
+function owns(str,me){return me&&new RegExp("\\b"+me+"\\b").test(str);}
+function badge(str){return str.split(/[\/,]/).map(s=>{const o=s.trim();return `<span class="badge" style="background:${color(o)}">${o}</span>`;}).join(" ");}
+function fmt(d){return new Date(d+"T00:00").toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+function daysTo(d){return Math.round((new Date(d+"T00:00")-new Date(new Date().toDateString()))/86400000);}
+function whenLabel(d){const n=daysTo(d);return n>1?`starts in ${n} days`:n===1?"starts tomorrow":n===0?"starts today":`started ${-n}d ago`;}
+function pct(id){const p=data.progress[id]||{};return Math.round(TASKS.filter(t=>p[t.n]&&p[t.n].done).length/TASKS.length*100);}
+
+function renderPeople(){
+  const el=$("people");
+  el.innerHTML=data.runs.map(r=>{const pc=pct(r.id);return `<div class="chip ${activeRun===r.id?'active':''}" data-run="${r.id}">
+    <button class="del" data-del="${r.id}" title="Remove">×</button>
+    <div class="nm">${r.name}</div><div class="ro">${r.role}</div>
+    <div class="when">${fmt(r.start)} · ${whenLabel(r.start)}</div>
+    <div class="acc">Accountable: ${r.accountable||'—'}</div>
+    <div class="mini"><span style="width:${pc}%"></span></div><div class="pc">${pc}% complete</div></div>`;}).join("")
+    +`<div class="chip add" id="addBtn">+ Add hire</div>`;
+  el.querySelectorAll('.chip[data-run]').forEach(c=>c.addEventListener("click",e=>{if(e.target.dataset.del)return;activeRun=c.dataset.run;$("view").value="person";render();}));
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener("click",async e=>{e.stopPropagation();const id=b.dataset.del;const r=data.runs.find(x=>x.id===id);if(confirm(`Remove ${r.name}?`)){data.runs=data.runs.filter(x=>x.id!==id);delete data.progress[id];if(activeRun===id)activeRun=data.runs[0]?.id||null;await save();render();}}));
+  $("addBtn").addEventListener("click",async()=>{const name=prompt("New hire — full name:");if(!name)return;const role=prompt("Role:","Consultant")||"";const start=prompt("Start date (YYYY-MM-DD):","2026-07-06")||"2026-07-06";const id="r"+Date.now();data.runs.push({id,name,role,start,accountable:"Iryna"});data.progress[id]={};activeRun=id;$("view").value="person";await save();render();});
+}
+
+function renderPerson(){
+  const run=data.runs.find(r=>r.id===activeRun);
+  if(!run){$("main").innerHTML='<div class="empty">No hire selected. Add one above.</div>';$("progLabel").textContent="";$("progPct").textContent="";$("progBar").style.width="0";return;}
+  const p=data.progress[run.id]=data.progress[run.id]||{};
+  const onlyOpen=$("filterOpen").value==="open";
+  let html=`<div class="accbar"><b>Accountable owner:</b>
+    <select id="accSel">${ACCOUNTABLE.map(o=>`<option ${run.accountable===o?'selected':''}>${o}</option>`).join("")}</select>
+    <span style="color:#7a7d77;font-size:12px">— owns this hire end-to-end</span></div>`;
+  let lastS=null,lastP=null;const pcOf={};TASKS.forEach(t=>{pcOf[t.ph]=pcOf[t.ph]||{d:0,n:0};pcOf[t.ph].n++;if(p[t.n]&&p[t.n].done)pcOf[t.ph].d++;});
+  TASKS.forEach(t=>{const done=!!(p[t.n]&&p[t.n].done);if(onlyOpen&&done)return;
+    if(t.sec!==lastS){html+=`<div class="section-band">${t.sec}</div>`;lastS=t.sec;lastP=null;}
+    if(t.ph!==lastP){html+=`<div class="phase-band ${t.addon?'addon':''}"><span>${t.ph}</span><span class="count">${pcOf[t.ph].d}/${pcOf[t.ph].n}</span></div>`;lastP=t.ph;}
+    const st=p[t.n];const stamp=done&&st?.by?`<div class="stamp">✓ ${st.by} · ${st.at}</div>`:"";
+    html+=`<div class="task ${done?'done':''}"><input type="checkbox" data-n="${t.n}" ${done?'checked':''}>
+      <div class="num">${t.n}</div><div><div class="title">${t.task}</div>
+      <div class="meta">${badge(t.owner)}<span class="sys">${t.sys||'—'}</span></div>
+      ${t.notes?`<div class="notes">${t.notes}</div>`:""}${stamp}</div></div>`;});
+  $("main").innerHTML=html;
+  const pc=pct(run.id);$("progBar").style.width=pc+"%";$("progPct").textContent=pc+"%";$("progLabel").textContent=`${run.name} — ${run.role} · ${fmt(run.start)}`;
+  $("accSel").addEventListener("change",async e=>{run.accountable=e.target.value;await save();renderPeople();});
+  $("main").querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener("change",async()=>{
+    const me=meSel.value;if(cb.checked&&!me){alert("Select who you are first.");cb.checked=false;return;}
+    const n=+cb.dataset.n;if(cb.checked)p[n]={done:true,by:me,at:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})};else delete p[n];
+    await save();render();}));
+}
+
+function renderMine(){
+  const me=meSel.value;
+  if(!me){$("main").innerHTML='<div class="empty">Pick who you are (top-left) to see your actions across everyone.</div>';$("progLabel").textContent="My actions";$("progPct").textContent="";$("progBar").style.width="0";return;}
+  const runs=[...data.runs].sort((a,b)=>a.start.localeCompare(b.start));let html="",open=0,mine=0;
+  runs.forEach(run=>{const p=data.progress[run.id]||{};const m=TASKS.filter(t=>owns(t.owner,me));const o=m.filter(t=>!(p[t.n]&&p[t.n].done));mine+=m.length;open+=o.length;if(!o.length)return;
+    html+=`<div class="person-group"><h3><span>${run.name} · ${run.role}</span><span class="due">${fmt(run.start)} · ${whenLabel(run.start)}</span></h3>`;
+    o.forEach(t=>{html+=`<div class="task"><input type="checkbox" data-run="${run.id}" data-n="${t.n}"><div class="num">${t.n}</div><div><div class="title">${t.task}</div><div class="meta"><span class="sys">${t.sys||'—'}</span></div>${t.notes?`<div class="notes">${t.notes}</div>`:""}</div></div>`;});
+    html+=`</div>`;});
+  $("main").innerHTML=html||'<div class="empty">Nothing open for you — all caught up. 🎉</div>';
+  const dp=mine?Math.round((mine-open)/mine*100):0;$("progBar").style.width=dp+"%";$("progPct").textContent=dp+"%";$("progLabel").textContent=`${me} — ${open} open action${open!==1?'s':''} across ${data.runs.length} hires`;
+  $("main").querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener("change",async()=>{const p=data.progress[cb.dataset.run];p[+cb.dataset.n]={done:true,by:me,at:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})};await save();render();}));
+}
+
+function render(){if(!activeRun&&data.runs[0])activeRun=data.runs[0].id;renderPeople();const v=$("view").value;$("filterOpenWrap").style.display=v==="person"?"":"none";if(v==="person")renderPerson();else renderMine();}
+meSel.addEventListener("change",render);$("view").addEventListener("change",render);$("filterOpen").addEventListener("change",render);
+supabase.channel('tracker')
+  .on('postgres_changes', { event:'*', schema:'public', table:'tracker_state', filter:`id=eq.${ROW_ID}` },
+      async () => { data = await load(); render(); })
+  .subscribe();
+
+(async()=>{data=await load();render();})();
+</script>
